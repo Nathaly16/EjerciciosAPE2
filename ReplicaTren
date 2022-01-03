@@ -1,0 +1,54 @@
+--Nathaly Bravo
+--Tren
+
+library IEEE;
+use IEEE.STD_LOGIC_1164.ALL;
+
+entity Tren is
+    Port ( Tiempo, Sensor, Clk, SP : in  STD_LOGIC;
+           PA, PC, PARO, AVANCE : out  STD_LOGIC;
+           Q1, Q0 : inout  STD_LOGIC);
+end Tren;
+
+architecture Behavioral of Tren is
+	type estado is (A, B, C, D);
+	signal edo_pres, edo_fut: estado;
+begin
+	p_estados: process (edo_pres, Tiempo, Sensor)
+	begin
+		case edo_pres is
+			when A => PA <= '1'; PC <= '0'; PARO <= '0'; AVANCE <= '0'; Q1 <= '0'; Q0 <= '0';
+				if Tiempo = '1' then
+					edo_fut <= B;
+				else
+					edo_fut <= A;
+				end if;
+				
+			when B => PA <= '0'; PC <= '1'; PARO <= '0'; AVANCE <= '0'; Q1 <= '0'; Q0 <= '1';
+				if SP = '1' then
+					edo_fut <= C;
+				else
+					edo_fut <= B;
+				end if;
+			
+			when C => PA <= '0'; PC <= '0'; PARO <= '0'; AVANCE <= '1'; Q1 <= '1'; Q0 <= '0';
+				if Sensor = '1' then
+					edo_fut <= D;
+				else
+					edo_fut <= C;
+				end if;
+				
+			when D => PA <= '0'; PC <= '0'; PARO <= '1'; AVANCE <= '0'; Q1 <= '1'; Q0 <= '1';
+				edo_fut <= A;
+				
+		end case;
+	end process p_estados;
+	
+	p_reloj: process (Clk)
+	begin
+		if (Clk'event and Clk= '1') then
+			edo_pres <= edo_fut;
+		end if;
+	end process p_reloj;
+
+end Behavioral;
