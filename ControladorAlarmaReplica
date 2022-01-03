@@ -1,0 +1,94 @@
+--Nathaly Bravo
+--Controlador Alarma
+
+library IEEE;
+use IEEE.STD_LOGIC_1164.ALL;
+
+entity C_Alarma is
+    Port ( Clk, FX, Cont4, Boton  : in  STD_LOGIC;
+           Reset, INC, Activa, Alarma : out  STD_LOGIC);
+end C_Alarma;
+
+architecture Behavioral of C_Alarma is
+	type estado is (A, B, C, D, E, F, G, H, I, J, K, L);
+	signal edo_pres, edo_fut: estado;
+begin
+	p_estados: process (edo_pres, Clk, FX, Cont4, Boton)
+	begin
+		case edo_pres is
+			when A => Reset <= '0'; INC <= '0'; Activa <= '0'; Alarma <= '0'; 
+				edo_fut <= B; 
+				
+			when B => Reset <= '0'; INC <= '0'; Activa <= '0'; Alarma <= '0'; 
+				if (Boton <= '1') then
+					edo_fut <= C; 
+				else
+					edo_fut <= B;
+				end if;
+				
+			when C => Reset <= '0'; INC <= '0'; Activa <= '0'; Alarma <= '0'; 
+				if (FX <= '1') then
+					edo_fut <= D; 
+				else
+					edo_fut <= H;
+				end if;
+			
+			when D => Reset <= '0'; INC <= '0'; Activa <= '0'; Alarma <= '0'; 
+				if (Boton <= '1') then
+					edo_fut <= D; 
+				else
+					edo_fut <= E;
+				end if;
+			
+			when E => Reset <= '0'; INC <= '0'; Activa <= '0'; Alarma <= '0'; 
+				if (Cont4 <= '1') then
+					edo_fut <= G; 
+				else
+					edo_fut <= F;
+				end if;
+				
+			when F => Reset <= '0'; INC <= '1'; Activa <= '0'; Alarma <= '0'; 
+				edo_fut <= B;
+			
+			when G => Reset <= '0'; INC <= '0'; Activa <= '1'; Alarma <= '0'; 
+				edo_fut <= A;
+			
+			when H => Reset <= '0'; INC <= '0'; Activa <= '0'; Alarma <= '0'; 
+				if (Boton <= '1') then
+					edo_fut <= H; 
+				else
+					edo_fut <= I;
+				end if;
+			
+			when I => Reset <= '0'; INC <= '0'; Activa <= '0'; Alarma <= '0'; 
+				if (Cont4 <= '1') then
+					edo_fut <= L; 
+				else
+					edo_fut <= J;
+				end if;
+			
+			when J => Reset <= '0'; INC <= '1'; Activa <= '0'; Alarma <= '0'; 
+				edo_fut <= K;
+				
+			when K => Reset <= '0'; INC <= '0'; Activa <= '0'; Alarma <= '0'; 
+				if (Boton <= '1') then
+					edo_fut <= H; 
+				else
+					edo_fut <= K;
+				end if;
+			
+			when L => Reset <= '0'; INC <= '0'; Activa <= '0'; Alarma <= '1'; 
+				edo_fut <= A;
+		end case;
+	end process p_estados;
+	
+	p_reloj: process (Clk)
+	begin
+		if (Clk'event and Clk= '1') then
+			edo_pres <= edo_fut;
+		end if;
+	end process p_reloj;
+
+
+end Behavioral;
+
