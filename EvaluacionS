@@ -1,0 +1,121 @@
+-- Nathaly Bravo
+-- Evaluacion 
+----------------------------------------------------------------------------------
+library IEEE;
+use IEEE.STD_LOGIC_1164.ALL;
+
+
+entity semaforo4S is
+
+	port(entrada : in STD_LOGIC;
+		  salida : out STD_LOGIC_VECTOR(2 downto 0);
+		  clk,reset : in STD_LOGIC);
+		  
+end semaforo4S;
+	
+architecture Behavioral of semaforo4S is
+
+type estado is (S0, S1, S2, S3, S4, S5, S6);
+
+signal estado_act, estado_sig: estado;
+	
+begin
+
+	process(entrada, estado_act)
+	
+
+		begin
+		salida <= "000";
+		
+		
+		case(estado_act)is
+			when(S0)=>
+				if (entrada = '0') then
+					estado_sig <= S0;
+					salida <= "000";
+					estado_act <= estado_sig;
+				else
+					estado_sig <= S1;
+					salida <= "001";
+					estado_act <= estado_sig;
+				end if;
+			
+			when(S1)=>
+				if (entrada = '0') then
+					estado_sig <= S1;
+					salida <= "001";
+					estado_act <= estado_sig;
+				else
+					estado_sig <= S2;
+					salida <= "010";
+					estado_act <= estado_sig;
+				end if;			
+
+			when(S2)=>
+				if (entrada = '0') then
+					estado_sig <= S3;
+					salida <= "011";
+					estado_act <= estado_sig;
+				else
+					estado_sig <= S0;
+					salida <= "000";
+					estado_act <= estado_sig;
+				end if;
+
+			when(S3)=>
+				if (entrada = '0') then
+					estado_sig <= S1;
+					salida <= "001";
+					estado_act <= estado_sig;
+				else
+					estado_sig <= S4;
+					salida <= "100";
+					estado_act <= estado_sig;
+				end if;
+
+			when(S4)=>
+				if (entrada = '0') then
+					estado_sig <= S5;
+					salida <= "101";
+					estado_act <= estado_sig;
+				else
+					estado_sig <= S0;
+					salida <= "000";
+					estado_act <= estado_sig;
+				end if;	
+				
+			when(S5)=>
+				if (entrada = '0') then
+					estado_sig <= S1;
+					salida <= "001";
+					estado_act <= estado_sig;
+				else
+					estado_sig <= S6;
+					salida <= "110";
+					estado_act <= estado_sig;
+				end if;
+				
+			when(S6)=>
+				if (entrada = '0') then
+					estado_sig <= S5;
+					salida <= "101";
+					estado_act <= estado_sig;
+				else
+					estado_sig <= S0;
+					salida <= "000";
+					estado_act <= estado_sig;
+				end if;		
+			
+			end case;
+	end process;
+			
+	process(clk,reset)
+	begin
+			if(reset = '1')then
+				estado_act <= S0;
+			elsif(clk = '1') then
+				estado_act <= estado_sig;
+			end if;	
+	end process;
+end Behavioral;
+
