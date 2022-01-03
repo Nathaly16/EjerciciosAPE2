@@ -1,0 +1,87 @@
+--Nathaly Bravo
+--Maquina
+
+library IEEE;
+use IEEE.STD_LOGIC_1164.ALL;
+
+entity Maquina is
+    Port ( Clk, Moneda, MP, Precio, LC, LS : in  STD_LOGIC;
+           CAP, Limpia, Sirve, Cambio, DEC, IM, Q2, Q1, Q0 : out  STD_LOGIC);
+end Maquina;
+
+architecture Behavioral of Maquina is
+	type estado is (A, B, C, D, E, F, G, H, I);
+	signal edo_pres, edo_fut: estado;
+begin
+	p_estados: process (edo_pres, Moneda, MP, Precio, LC, LS)
+	begin
+		case edo_pres is
+			when A => CAP <= '0'; Limpia <= '0'; Sirve <= '0'; Cambio <= '0'; Dec <= '0'; 
+				IM <= '1'; Q2 <= '0'; Q1 <= '0'; Q0 <= '0';
+				if Moneda = '1' then
+					edo_fut <= B;
+				else
+					edo_fut <= A;
+				end if;
+				
+			when B => CAP <= '0'; Limpia <= '0'; Sirve <= '0'; Cambio <= '0'; Dec <= '0'; 
+				IM <= '0'; Q2 <= '0'; Q1 <= '0'; Q0 <= '1';
+				if Moneda = '0' then
+					edo_fut <= C;
+				else
+					edo_fut <= B;
+				end if;
+				
+			when C => CAP <= '0'; Limpia <= '0'; Sirve <= '0'; Cambio <= '0'; Dec <= '0'; 
+				IM <= '0'; Q2 <= '0'; Q1 <= '1'; Q0 <= '0';
+				if MP = '0' then
+					edo_fut <= D;
+				else
+					edo_fut <= A;
+				end if;
+				
+			when D => CAP <= '0'; Limpia <= '0'; Sirve <= '0'; Cambio <= '0'; Dec <= '0'; 
+				IM <= '0'; Q2 <= '0'; Q1 <= '1'; Q0 <= '1';
+				if Precio = '0' then
+					edo_fut <= G;
+				else
+					edo_fut <= E;
+				end if;
+				
+			when E => CAP <= '0'; Limpia <= '0'; Sirve <= '1'; Cambio <= '0'; Dec <= '0'; 
+				IM <= '0'; Q2 <= '1'; Q1 <= '0'; Q0 <= '0';
+				if LS = '0' then
+					edo_fut <= E;
+				else
+					edo_fut <= F;
+				end if;
+				
+			when F => CAP <= '1'; Limpia <= '1'; Sirve <= '0'; Cambio <= '0'; Dec <= '0'; 
+				IM <= '0'; Q2 <= '1'; Q1 <= '0'; Q0 <= '1'; edo_fut <= A;
+				
+			when G => CAP <= '0'; Limpia <= '0'; Sirve <= '0'; Cambio <= '1'; Dec <= '0'; 
+				IM <= '0'; Q2 <= '1'; Q1 <= '1'; Q0 <= '1';
+				if LC = '0' then
+					edo_fut <= G;
+				else
+					edo_fut <= H;
+				end if;
+				
+			when H => CAP <= '0'; Limpia <= '0'; Sirve <= '0'; Cambio <= '0'; Dec <= '1'; 
+				IM <= '0'; Q2 <= '0'; Q1 <= '0'; Q0 <= '0'; 
+				edo_fut <= D;
+				
+			when others => CAP <= '0'; Limpia <= '0'; Sirve <= '0'; Cambio <= '0'; Dec <= '0'; 
+				IM <= '0'; Q2 <= '0'; Q1 <= '0'; Q0 <= '0'; edo_fut <= A;
+		end case;
+	end process p_estados;
+	
+	p_reloj: process (Clk)
+	begin
+		if (Clk'event and Clk= '1') then
+			edo_pres <= edo_fut;
+		end if;
+	end process p_reloj;
+
+end Behavioral;
+
